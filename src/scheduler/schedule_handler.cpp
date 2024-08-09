@@ -11,9 +11,9 @@
 #include "scheduler/schedule_handler.hpp"
 #include "scheduler/scheduler.hpp"
 
-dtor::schedule_handler::schedule_handler(std::shared_ptr<scheduler_impl> impl, const std::function<void()> &callback,
-                                         const float interval) :
-    m_impl(std::move(impl)), m_callback(callback), m_interval(interval) {
+dtor::schedule_handler::schedule_handler(std::shared_ptr<scheduler_impl> impl, const float interval,
+                                         const std::function<void()> &callback, const repeat_type repeat) :
+    m_impl(std::move(impl)), m_interval(interval), m_callback(callback), m_repeat(repeat) {
     m_impl->schedule(this);
 }
 
@@ -27,5 +27,9 @@ void dtor::schedule_handler::update(const float delta) {
     if (m_elapsed > m_interval) {
         m_elapsed -= m_interval;
         m_callback();
+
+        if (m_repeat == repeat_type::once) {
+            m_impl->unschedule(this);
+        }
     }
 }

@@ -14,12 +14,18 @@
 namespace dtor {
     class scheduler_impl;
 
+    enum class repeat_type {
+        once,
+        repeat,
+    };
+
     class schedule_handler {
     public:
         using callback_t = std::function<void()>;
 
     public:
-        schedule_handler(std::shared_ptr<scheduler_impl> impl, const std::function<void()> &callback, float interval);
+        schedule_handler(std::shared_ptr<scheduler_impl> impl, float interval, const std::function<void()> &callback,
+                         repeat_type repeat);
         ~schedule_handler();
 
         void update(float delta);
@@ -27,8 +33,11 @@ namespace dtor {
     private:
         std::shared_ptr<scheduler_impl> m_impl;
 
-        const callback_t m_callback;
         const float m_interval;
+        const callback_t m_callback;
+        const repeat_type m_repeat;
         float m_elapsed = 0.0F;
     };
+
+    using schedule_handler_ptr = std::unique_ptr<schedule_handler>;
 }

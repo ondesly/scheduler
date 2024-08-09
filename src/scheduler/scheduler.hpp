@@ -21,13 +21,15 @@ namespace dtor {
         friend scheduler;
 
     private:
-        void update(float delta) const;
+        void update(float delta);
 
         void schedule(schedule_handler *handler);
         void unschedule(schedule_handler *handler);
 
     private:
         std::unordered_set<schedule_handler *> m_handlers;
+        std::vector<schedule_handler *> m_handlers_to_add;
+        std::vector<schedule_handler *> m_handlers_to_remove;
 
     };
 }
@@ -40,7 +42,8 @@ namespace dtor {
 
         void update(float delta) const;
 
-        std::shared_ptr<schedule_handler> schedule(const schedule_handler::callback_t &callback, float interval);
+        schedule_handler_ptr once(float interval, const schedule_handler::callback_t &callback);
+        schedule_handler_ptr repeat(float interval, const schedule_handler::callback_t &callback);
 
     private:
         static std::shared_ptr<scheduler_impl> s_impl;
